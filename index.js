@@ -14,6 +14,8 @@ autoIncrement.initialize(mongoose);
 
 // Define Mongo Model
 var postSchema = new Schema({
+  'title': String,
+  'user': String,
   'text': String,
   'date': { type: Date, default: Date.now }
 });
@@ -34,11 +36,17 @@ http.createServer(app).listen(app.get('port'), function() {
   console.log("Express server listening!!");
 });
 
-// Show Post List Page
-app.get('/', function(req, res) {
+// Show Add Post Page
+app.get('/post/add', function(req, res) {
+  res.render('post/add');
+});
 
+// Do Add Post
+app.post('/post/add', function(req, res) {
   var post = new Post();
-  post.text = 'a';
+  post.title = req.params.title;
+  post.user= req.params.user;
+  post.text = req.params.text;
   post.save(function(err){
     if(err) console.log("Something went wrong while saving the thing");
     else console.log("Thing was successfully saved");
@@ -48,13 +56,14 @@ app.get('/', function(req, res) {
 
 // Show Post Detail Page
 app.get('/post/:id', function(req, res) {
+  Post.findOne({'_id': req.params.id}, function(err, post) {
+    res.render('post/show', {post: post});
+  });
 });
 
-// Show Add Post Page
-app.get('/post/add', function(req, res) {
-  res.send('Show Add Post');
-});
-
-// Do Add Post
-app.post('/post/add', function(req, res) {
+// Show Post List Page
+app.get('/', function(req, res) {
+  Post.find({}, function(err, posts) {
+    res.render('index', {posts: posts});
+  });
 });

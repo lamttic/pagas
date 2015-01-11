@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+  head
+    title=Pagas
+  body
+    h1 Pagas
+    form(
+      method='post'
+      action='/post/add'
+    )
+      input(
+        type='text'
+        name='post[title]'
+        placeholder='Insert your title!'
+      )
+      input(
+        type='text'
+        name='post[text]'
+        placeholder='Insert your text'
+      )
+      input(
+        type='text'
+        name='post[user]'
+        placeholder='Insert your name.'
+      )
+      input(
+        type='submit'
+        value='Add your post'
+      )
