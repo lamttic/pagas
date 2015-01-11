@@ -4,6 +4,7 @@ var mongoUrl = 'mongodb://localhost:27017/pagas';
 var path = require('path');
 var http = require('http');
 var express = require('express');
+var bodyParser = require('body-parser');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     autoIncrement = require('mongoose-auto-increment');
@@ -30,6 +31,10 @@ app.set('port', process.env.PORT||1337);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 // Initialize Http Server
 http.createServer(app).listen(app.get('port'), function() {
@@ -44,14 +49,17 @@ app.get('/post/add', function(req, res) {
 // Do Add Post
 app.post('/post/add', function(req, res) {
   var post = new Post();
-  post.title = req.params.title;
-  post.user= req.params.user;
-  post.text = req.params.text;
-  post.save(function(err){
-    if(err) console.log("Something went wrong while saving the thing");
-    else console.log("Thing was successfully saved");
+  post.title = req.body.title;
+  post.user = req.body.user;
+  post.text = req.body.text;
+  post.save(function(err, result){
+    if(err) {
+      res.send('Something went wrong while saving the thing');
+    } else {
+      console.log("Thing was successfully saved");
+      res.redirect('/post/' + result._id);
+    }
   });
-  res.send('ok');
 });
 
 // Show Post Detail Page
